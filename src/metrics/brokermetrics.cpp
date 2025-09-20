@@ -62,10 +62,10 @@ void BrokerMetrics::print_summary() const
 {
     auto now = std::chrono::high_resolution_clock::now();
     auto duration =
-        std::chrono::duration_cast<std::chrono::seconds>(now - d_start_time);
+        std::chrono::duration<double>(now - d_start_time);
 
     std::cout << "\n=== Broker Performance Summary ===" << std::endl;
-    std::cout << "Runtime: " << duration.count() << " seconds" << std::endl;
+    std::cout << "Runtime: " << std::fixed << std::setprecision(3) << duration.count() << " seconds" << std::endl;
     std::cout << "Messages received: " << d_messages_received.load()
               << std::endl;
     std::cout << "Messages sent: " << d_messages_sent.load() << std::endl;
