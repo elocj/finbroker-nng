@@ -29,11 +29,10 @@ class BrokerMetrics
     void record_message_sent(size_t msg_len);
     void record_processing_time(std::chrono::nanoseconds duration);
 
-    void print_latency_chart() const;
-
     // Reporting methods
     void print_summary() const;
 
   private:
     void print_latency_stats() const;
+    void print_latency_chart() const;
 };

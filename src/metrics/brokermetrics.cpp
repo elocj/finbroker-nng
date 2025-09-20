@@ -6,7 +6,6 @@ BrokerMetrics::BrokerMetrics()
     d_start_time = std::chrono::high_resolution_clock::now();
 }
 
-// Recording methods
 void BrokerMetrics::record_message_received(size_t msg_len,
                                             const std::string &topic)
 {

@@ -1,8 +1,8 @@
 #include "finbroker.h"
 #include <algorithm>
 #include <iostream>
-#include <nng/protocol/pubsub0/pub.h> // Add this line
-#include <nng/protocol/pubsub0/sub.h> // Add this line
+#include <nng/protocol/pubsub0/pub.h>
+#include <nng/protocol/pubsub0/sub.h>
 #include <thread>
 
 FinBroker::FinBroker() { d_running = false; }
@@ -15,9 +15,9 @@ bool FinBroker::start(const std::string &subscribe_url,
     if (d_running) {
         return false;
     }
-
     d_running = true;
 
+    // Open sockets
     int rv;
     rv = nng_sub0_open(&d_sub_socket);
     if (rv != 0)
@@ -28,17 +28,17 @@ bool FinBroker::start(const std::string &subscribe_url,
         std::cerr << "Failed to open NNG publisher socket: " << nng_strerror(rv)
                   << std::endl;
 
-    // ADD THESE LINES - Subscribe to topics
+    // Subscribe to topics
     rv = nng_socket_set(d_sub_socket, NNG_OPT_SUB_SUBSCRIBE, "NYSE_feed", 9);
     if (rv != 0)
         std::cerr << "Failed to subscribe to NYSE_feed: " << nng_strerror(rv)
                   << std::endl;
-
     rv = nng_socket_set(d_sub_socket, NNG_OPT_SUB_SUBSCRIBE, "NASDAQ_feed", 11);
     if (rv != 0)
         std::cerr << "Failed to subscribe to NASDAQ_feed: " << nng_strerror(rv)
                   << std::endl;
 
+    // Configure listeners
     nng_listener sub_ls;
     nng_listener pub_ls;
     rv = nng_listener_create(&sub_ls, d_sub_socket, subscribe_url.c_str());
@@ -67,12 +67,11 @@ void FinBroker::run()
 {
     while (d_running) {
         auto recv_start = std::chrono::high_resolution_clock::now();
-        // std::cout << "YAP" << std::endl;
         char *msg = nullptr;
         size_t msg_len = 0;
 
         int rv = nng_recv(d_sub_socket, &msg, &msg_len,
-                          NNG_FLAG_ALLOC | NNG_FLAG_NONBLOCK);
+                          NNG_FLAG_ALLOC | NNG_FLAG_NONBLOCK); // Make non-blocking
         if (rv == 0) {
             std::string topic;
             std::string message(msg, msg_len);
@@ -94,7 +93,7 @@ void FinBroker::run()
                     recv_end - recv_start);
             d_metrics.record_processing_time(processing_time);
 
-            // Route to all subscribers
+            // *FUTURE*: Route to all subscribers
             // route_message(publisher, data)
 
             nng_free(msg, msg_len);
@@ -158,7 +157,7 @@ bool FinBroker::add_subscriber(const std::string &name)
 {
     if (std::find(d_subscribers.begin(), d_subscribers.end(), name) !=
         d_subscribers.end()) {
-        std::cerr << "Subscriber with name '" << "name" << "' already exists!";
+        std::cerr << "Subscriber with name '" << name << "' already exists!";
         return false;
     }
 
@@ -174,6 +173,6 @@ void FinBroker::remove_subscriber(const std::string &name)
             std::remove(d_subscribers.begin(), d_subscribers.end(), name),
             d_subscribers.end());
     } else {
-        std::cerr << "No subscriber with name '" << "name" << "' found!";
+        std::cerr << "No subscriber with name '" << name << "' found!";
     }
 }

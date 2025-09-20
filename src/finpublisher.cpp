@@ -14,13 +14,7 @@ int main()
 
     // Send market data
     std::string message = "NYSE_feed:MSFT,150.25,1000";
-    // for (int i = 0; i < 5; i++) {
     while (true) {
-        // std::ostringstream oss;
-        // oss << message << i;
-        // message = oss.str();
-        // std::cout << "Sending message " << (i + 1) << "/5: " << message <<
-        // std::endl;
         nng_send(pub_sock, (void *)message.c_str(), message.length(), 0);
     }
 

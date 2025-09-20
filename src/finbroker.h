@@ -12,7 +12,6 @@ class FinBroker
     FinBroker();
     ~FinBroker();
 
-    // Core broker operations
     bool start(const std::string &subscribe_url,
                const std::string &publish_url);
     void stop();
@@ -33,7 +32,6 @@ class FinBroker
     void print_stats();
 
   private:
-    // NNG sockets
     nng_socket d_pub_socket; // For receiving from publishers
     nng_socket d_sub_socket; // For sending to subscribers
 
@@ -45,9 +43,8 @@ class FinBroker
     bool d_running;
 
     // Metrics
-    BrokerMetrics d_metrics; // ← Add this member
+    BrokerMetrics d_metrics;
 
-    // Internal methods
     void broadcast_to_subscribers(const std::string &message);
     bool extract_topic(const std::string &message, std::string *topic,
                        std::string *errStr);
