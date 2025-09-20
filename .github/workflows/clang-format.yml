@@ -13,12 +13,6 @@ jobs:
   clang-format:
     runs-on: ubuntu-latest
     steps:
-      - name: Install clang-format-18
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-format-18
-          sudo ln -s /usr/bin/clang-format-18 /usr/bin/clang-format
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -29,5 +23,5 @@ jobs:
         run: |
           files=$(git ls-files '*.cpp' '*.hpp' '*.h' '*.cc' '*.c')
           if [ -n "$files" ]; then
-            clang-format --dry-run --Werror $files
+            clang-format-18 --dry-run --Werror $files
           fi
