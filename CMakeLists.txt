@@ -16,7 +16,8 @@ endif()
 # Create executable
 add_executable(finbroker-nng
     src/main.cpp
-    src/finbroker.cpp)
+    src/finbroker.cpp
+    src/metrics/brokermetrics.cpp)
 
 add_executable(finpublisher-nng
     src/finpublisher.cpp)

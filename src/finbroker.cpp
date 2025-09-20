@@ -3,6 +3,7 @@
 #include <nng/protocol/pubsub0/sub.h>  // Add this line
 #include <nng/protocol/pubsub0/pub.h>  // Add this line
 #include <algorithm>
+#include <thread>
 
 FinBroker::FinBroker()
 {
@@ -58,27 +59,67 @@ void FinBroker::run()
 {
     while (d_running)
     {
+        auto recv_start = std::chrono::high_resolution_clock::now(); 
         // std::cout << "YAP" << std::endl;
         char* msg = nullptr;
         size_t msg_len = 0;
 
-        int rv = nng_recv(d_sub_socket, &msg, &msg_len, NNG_FLAG_ALLOC);
+        int rv = nng_recv(d_sub_socket, &msg, &msg_len, NNG_FLAG_ALLOC | NNG_FLAG_NONBLOCK);
         if (rv == 0)
         {
-            std::cout << "JOO COING HERE" << msg << std::endl;
+            std::string topic;
+            std::string message(msg, msg_len);
+            std::string errStr;
+            
+            if (!extract_topic(message, &topic, &errStr))
+            {
+                std::cerr << errStr << std::endl;
+            }
+
+            d_metrics.record_message_received(msg_len, topic);
+            std::cout << "Received: " << msg << std::endl;
             nng_send(d_pub_socket, msg, msg_len, 0);
-            // size_t colon_pos = message.find(':');
-            // if (colon_pos != std::string::npos) {
-            //     std::string publisher = message.substr(0, colon_pos);
-            //     std::string data = message.substr(colon_pos + 1);
+
+            d_metrics.record_message_sent(msg_len);
+
+            auto recv_end = std::chrono::high_resolution_clock::now();
+            auto processing_time = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                recv_end - recv_start
+            );
+            d_metrics.record_processing_time(processing_time);
                 
-            //     // Route to all subscribers
-            //     route_message(publisher, data)
-            // }
+            // Route to all subscribers
+            // route_message(publisher, data)
 
             nng_free(msg, msg_len);
         }
+        else if (rv == NNG_EAGAIN)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            continue;
+        }
+        else
+        {
+            // Handle other errors
+            std::cerr << "Error receiving message: " << nng_strerror(rv) << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
     }
+}
+
+void FinBroker::print_stats() {
+    d_metrics.print_summary();
+}
+
+// Add this helper method
+bool FinBroker::extract_topic(const std::string& message, std::string* topic, std::string* errStr) {
+    size_t colon_pos = message.find(':');
+    if (colon_pos != std::string::npos) {
+        *topic = message.substr(0, colon_pos);
+        return true;
+    }
+    *errStr = "ERROR: Cannot find topic name";
+    return false;
 }
 
 void FinBroker::route_message(const std::string& publisher, const std::string& message)

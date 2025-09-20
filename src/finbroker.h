@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "metrics/brokermetrics.h"
 
 class FinBroker {
 public:
@@ -25,6 +26,8 @@ public:
     
     // Message routing
     void route_message(const std::string& publisher, const std::string& message);
+
+    void print_stats();
     
 private:
     // NNG sockets
@@ -37,7 +40,11 @@ private:
     
     // State
     bool d_running;
+
+    // Metrics
+    BrokerMetrics d_metrics;  // ← Add this member
     
     // Internal methods
     void broadcast_to_subscribers(const std::string& message);
+    bool extract_topic(const std::string& message, std::string* topic, std::string* errStr);  
 };
