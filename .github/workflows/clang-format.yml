@@ -13,15 +13,25 @@ jobs:
   clang-format:
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Checkout code
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install clang-format
-        run: sudo apt-get install -y clang-format
+      # Step 2: Install latest LLVM/clang-format 18
+      - name: Install latest LLVM/clang-format 18
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 18
+          sudo ln -sf /usr/bin/clang-format-18 /usr/bin/clang-format
 
+      # Step 3: Verify clang-format version
+      - name: Check clang-format version
+        run: clang-format --version
+
+      # Step 4: Run formatting check
       - name: Run clang-format
         run: |
           files=$(git ls-files '*.cpp' '*.hpp' '*.h' '*.cc' '*.c')
           if [ -n "$files" ]; then
-            clang-format-18 --dry-run --Werror $files
-          fi
+            clang-format --dry-run --Werror $files
