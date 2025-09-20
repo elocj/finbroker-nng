@@ -35,3 +35,4 @@ jobs:
           files=$(git ls-files '*.cpp' '*.hpp' '*.h' '*.cc' '*.c')
           if [ -n "$files" ]; then
             clang-format --dry-run --Werror $files
+          fi
