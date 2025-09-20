@@ -1,50 +1,54 @@
 #pragma once
 
+#include "metrics/brokermetrics.h"
+#include <memory>
 #include <nng/nng.h>
 #include <string>
 #include <vector>
-#include <memory>
-#include "metrics/brokermetrics.h"
 
-class FinBroker {
-public:
+class FinBroker
+{
+  public:
     FinBroker();
     ~FinBroker();
-    
+
     // Core broker operations
-    bool start(const std::string& subscribe_url, const std::string& publish_url);
+    bool start(const std::string &subscribe_url,
+               const std::string &publish_url);
     void stop();
-    void run();  // Main event loop
-    
+    void run(); // Main event loop
+
     // Publisher management
-    bool add_publisher(const std::string& name);
-    void remove_publisher(const std::string& name);
-    
-    // Subscriber management  
-    bool add_subscriber(const std::string& name);
-    void remove_subscriber(const std::string& name);
-    
+    bool add_publisher(const std::string &name);
+    void remove_publisher(const std::string &name);
+
+    // Subscriber management
+    bool add_subscriber(const std::string &name);
+    void remove_subscriber(const std::string &name);
+
     // Message routing
-    void route_message(const std::string& publisher, const std::string& message);
+    void route_message(const std::string &publisher,
+                       const std::string &message);
 
     void print_stats();
-    
-private:
+
+  private:
     // NNG sockets
-    nng_socket d_pub_socket;    // For receiving from publishers
-    nng_socket d_sub_socket;    // For sending to subscribers
-    
+    nng_socket d_pub_socket; // For receiving from publishers
+    nng_socket d_sub_socket; // For sending to subscribers
+
     // Connection management
     std::vector<std::string> d_publishers;
     std::vector<std::string> d_subscribers;
-    
+
     // State
     bool d_running;
 
     // Metrics
-    BrokerMetrics d_metrics;  // ← Add this member
-    
+    BrokerMetrics d_metrics; // ← Add this member
+
     // Internal methods
-    void broadcast_to_subscribers(const std::string& message);
-    bool extract_topic(const std::string& message, std::string* topic, std::string* errStr);  
+    void broadcast_to_subscribers(const std::string &message);
+    bool extract_topic(const std::string &message, std::string *topic,
+                       std::string *errStr);
 };
