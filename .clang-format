@@ -21,7 +21,6 @@ ColumnLimit:     80
 SortIncludes:    true
 ReflowComments:  true
 BinPackArguments: true
-BinPackLongBracedList: true
 BinPackParameters: false
 BracedInitializerIndentWidth: 4
 ConstructorInitializerIndentWidth: 4
