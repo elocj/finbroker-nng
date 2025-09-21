@@ -12,8 +12,7 @@ class FinBroker
     FinBroker();
     ~FinBroker();
 
-    bool start(const std::string &subscribe_url,
-               const std::string &publish_url);
+    bool start(const std::string &subscribe_url, const std::string &publish_url);
     void stop();
     void run(); // Main event loop
 
@@ -26,8 +25,7 @@ class FinBroker
     void remove_subscriber(const std::string &name);
 
     // Message routing
-    void route_message(const std::string &publisher,
-                       const std::string &message);
+    void route_message(const std::string &publisher, const std::string &message);
 
     void print_stats();
 
@@ -46,6 +44,5 @@ class FinBroker
     BrokerMetrics d_metrics;
 
     void broadcast_to_subscribers(const std::string &message);
-    bool extract_topic(const std::string &message, std::string *topic,
-                       std::string *errStr);
+    bool extract_topic(const std::string &message, std::string *topic, std::string *errStr);
 };

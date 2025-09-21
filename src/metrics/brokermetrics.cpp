@@ -1,25 +1,23 @@
 #include "brokermetrics.h"
 #include <iomanip> // ← ADD THIS LINE
 
-BrokerMetrics::BrokerMetrics()
-{
-    d_start_time = std::chrono::high_resolution_clock::now();
-}
+BrokerMetrics::BrokerMetrics() { d_start_time = std::chrono::high_resolution_clock::now(); }
 
-void BrokerMetrics::record_message_received(size_t msg_len,
-                                            const std::string &topic)
+void BrokerMetrics::record_message_received(size_t msg_len, const std::string &topic)
 {
     d_messages_received.fetch_add(1);
     d_bytes_received.fetch_add(msg_len);
 
-    if (!topic.empty()) {
+    if (!topic.empty())
+    {
         d_topic_counts[topic].fetch_add(1);
     }
 }
 
 void BrokerMetrics::print_latency_chart() const
 {
-    if (d_processing_times.empty()) {
+    if (d_processing_times.empty())
+    {
         std::cout << "No latency data available for chart" << std::endl;
         return;
     }
@@ -30,19 +28,17 @@ void BrokerMetrics::print_latency_chart() const
     const int step = std::max(1, (int)d_processing_times.size() / 50);
 
     std::cout << "Message# | Latency(ns) | Chart" << std::endl;
-    std::cout << "---------|-------------|" << std::string(40, '-')
-              << std::endl;
+    std::cout << "---------|-------------|" << std::string(40, '-') << std::endl;
 
-    for (size_t i = 0; i < d_processing_times.size(); i += step) {
+    for (size_t i = 0; i < d_processing_times.size(); i += step)
+    {
         auto latency = d_processing_times[i];
 
         // Simple bar chart
-        int bar_length = std::min(
-            40, (int)(latency.count() / 1000)); // Scale to microseconds
+        int bar_length = std::min(40, (int)(latency.count() / 1000)); // Scale to microseconds
 
-        std::cout << std::setw(8) << i << " | " << std::setw(10)
-                  << latency.count() << " | " << std::string(bar_length, '*')
-                  << std::endl;
+        std::cout << std::setw(8) << i << " | " << std::setw(10) << latency.count() << " | "
+                  << std::string(bar_length, '*') << std::endl;
     }
 }
 
@@ -61,27 +57,25 @@ void BrokerMetrics::record_processing_time(std::chrono::nanoseconds duration)
 void BrokerMetrics::print_summary() const
 {
     auto now = std::chrono::high_resolution_clock::now();
-    auto duration =
-        std::chrono::duration<double>(now - d_start_time);
+    auto duration = std::chrono::duration<double>(now - d_start_time);
 
     std::cout << "\n=== Broker Performance Summary ===" << std::endl;
-    std::cout << "Runtime: " << std::fixed << std::setprecision(3) << duration.count() << " seconds" << std::endl;
-    std::cout << "Messages received: " << d_messages_received.load()
+    std::cout << "Runtime: " << std::fixed << std::setprecision(3) << duration.count() << " seconds"
               << std::endl;
+    std::cout << "Messages received: " << d_messages_received.load() << std::endl;
     std::cout << "Messages sent: " << d_messages_sent.load() << std::endl;
-    std::cout << "Bytes received: " << d_bytes_received.load() << " bytes"
-              << std::endl;
+    std::cout << "Bytes received: " << d_bytes_received.load() << " bytes" << std::endl;
     std::cout << "Bytes sent: " << d_bytes_sent.load() << " bytes" << std::endl;
-    std::cout << "Throughput: "
-              << (d_messages_received.load() / duration.count()) << " msg/sec"
+    std::cout << "Throughput: " << (d_messages_received.load() / duration.count()) << " msg/sec"
               << std::endl;
 
     // Topic breakdown
-    if (!d_topic_counts.empty()) {
+    if (!d_topic_counts.empty())
+    {
         std::cout << "\nTopic breakdown:" << std::endl;
-        for (const auto &[topic, count] : d_topic_counts) {
-            std::cout << "  " << topic << ": " << count.load() << " messages"
-                      << std::endl;
+        for (const auto &[topic, count] : d_topic_counts)
+        {
+            std::cout << "  " << topic << ": " << count.load() << " messages" << std::endl;
         }
     }
 

@@ -1,72 +1,98 @@
 #include "finbroker.h"
+#include "finpublisher.h"
+#include "finsubscriber.h"
 #include <chrono>
-#include <nng/nng.h>
+#include <iostream>
 #include <thread>
-
-int main()
-{
-    FinBroker broker;
-
-    // Start broker on two ports
-    broker.start("tcp://localhost:5555", "tcp://localhost:5556");
-
-    // Add some publishers and subscribers
-    broker.add_publisher("NYSE_feed");
-    broker.add_publisher("NASDAQ_feed");
-    broker.add_subscriber("trading_algo_1");
-    broker.add_subscriber("trading_algo_2");
-
-    // Run the broker (blocks forever)
-    // Run the broker in a separate thread
-    std::thread broker_thread([&broker]() { broker.run(); });
-
-    // Let it run for 30 seconds, then stop and print stats
-    std::this_thread::sleep_for(std::chrono::seconds(15));
-
-    broker.stop();
-    broker_thread.join();
-
-    // Print performance metrics
-    broker.print_stats(); // ← Print the metrics
-    // broker.run();
-
-    return 0;
-}
 
 void run_broker()
 {
     FinBroker broker;
 
-    // Start broker on two ports
     broker.start("tcp://localhost:5555", "tcp://localhost:5556");
 
-    // Add some publishers and subscribers
     broker.add_publisher("NYSE_feed");
     broker.add_publisher("NASDAQ_feed");
     broker.add_subscriber("trading_algo_1");
     broker.add_subscriber("trading_algo_2");
 
-    // Run the broker (blocks forever)
-    // Run the broker in a separate thread
-    std::thread broker_thread([&broker]() { broker.run(); });
+    // `run()` blocks forever so put in thread
+    std::thread run_thread([&broker]() { broker.run(); });
 
-    // Let it run for 30 seconds, then stop and print stats
     std::this_thread::sleep_for(std::chrono::seconds(15));
 
     broker.stop();
-    broker_thread.join();
+    run_thread.join();
 
-    // Print performance metrics
-    broker.print_stats(); // ← Print the metrics
-    // broker.run();
+    broker.print_stats();
 }
 
 void run_publishers()
 {
+    FinPublisher publisher;
 
+    if (!publisher.connect())
+    {
+        std::cerr << "Failed to connect publisher" << std::endl;
+        return;
+    }
+
+    std::vector<std::string> messages = {"NYSE_feed:MSFT,150.25,1000", "NYSE_feed:AAPL,175.50,500",
+                                         "NASDAQ_feed:GOOGL,2800.75,250",
+                                         "NYSE_feed:TSLA,800.00,750"};
+
+    // Currently sending a fixed number of messages
+    for (int i = 0; i < 5; ++i)
+    {
+        for (const auto &message : messages)
+        {
+            if (!publisher.send_message(message))
+            {
+                std::cerr << "Failed to send message" << std::endl;
+                return;
+            }
+            std::cout << "Publisher sent: " << message << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
+    publisher.disconnect();
 }
 
 void run_subscribers()
 {
-    
+    FinSubscriber subscriber;
+
+    if (!subscriber.connect())
+    {
+        std::cerr << "Failed to connect subscriber" << std::endl;
+        return;
+    }
+
+    std::thread run_thread([&subscriber]() { subscriber.start_listening(); });
+
+    std::this_thread::sleep_for(std::chrono::seconds(15));
+
+    subscriber.stop();
+    run_thread.join();
+    subscriber.disconnect();
+}
+
+int main()
+{
+    std::thread broker_thread(run_broker);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    std::thread subscriber_thread(run_subscribers);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    std::thread publisher_thread(run_publishers);
+
+    publisher_thread.join();
+    subscriber_thread.join();
+    broker_thread.join();
+
+    return 0;
 }
