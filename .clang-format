@@ -87,7 +87,6 @@ BracedInitializerIndentWidth: 4
 BraceWrapping:
   AfterCaseLabel:  false
   AfterClass:      false
-  AfterControlStatement: Always  # Change from Never to Always
   AfterEnum:       false
   AfterExternBlock: false
   AfterFunction:   false
@@ -259,7 +258,6 @@ SpacesInLineCommentPrefix:
   Maximum:         -1
 SpacesInParens:  Never
 SpacesInParensOptions:
-  ExceptDoubleParentheses: false
   InCStyleCasts:   false
   InConditionalStatements: false
   InEmptyParentheses: false
@@ -282,5 +280,4 @@ WhitespaceSensitiveMacros:
   - PP_STRINGIZE
   - STRINGIZE
 WrapNamespaceBodyWithEmptyLines: Leave
-...
 
