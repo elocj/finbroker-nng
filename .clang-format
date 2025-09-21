@@ -1,67 +1,23 @@
 ---
-Language:        Cpp
-IndentWidth:     4
-BreakBeforeBraces: Linux
-BraceWrapping:
-  AfterControlStatement: Always
-  AfterClass:      false
-  AfterEnum:       false
-  AfterFunction:   false
-  AfterNamespace:  false
-  AfterStruct:     false
-  AfterUnion:      false
-  BeforeCatch:     false
-  BeforeElse:      false
-  BeforeWhile:     false
-  IndentBraces:    false
-  SplitEmptyFunction: true
-  SplitEmptyRecord: true
-  SplitEmptyNamespace: true
-ColumnLimit:     80
-SortIncludes:    true
-ReflowComments:  true
-BinPackArguments: true
-BinPackParameters: false
-BracedInitializerIndentWidth: 4
-ConstructorInitializerIndentWidth: 4
-ContinuationIndentWidth: 4
-SpaceBeforeParens: ControlStatements
-SpaceBeforeParensOptions:
-  AfterControlStatements: true
-  AfterForeachMacros: true
-  AfterFunctionDefinitionName: false
-  AfterFunctionDeclarationName: false
-  AfterIfMacros:   true
-  AfterOverloadedOperator: false
-  AfterPlacementOperator: true
-  AfterRequiresInClause: false
-  AfterRequiresInExpression: false
-  BeforeNonEmptyParentheses: false
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
-SpaceBeforeRangeBasedForLoopColon: true
+Language: Cpp
+BasedOnStyle: LLVM
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Braces
+BreakBeforeBraces: Allman
+Cpp11BracedListStyle: true
+
+# Line length
+ColumnLimit: 100
+
+# Spacing
 SpaceAfterCStyleCast: false
-SpaceAfterLogicalNot: false
-SpaceAfterTemplateKeyword: true
-SpaceAroundPointerQualifiers: Default
-SpacesBeforeTrailingComments: 1
-SpacesInAngles:  Never
-SpacesInContainerLiterals: true
-SpacesInParens:  Never
-SpacesInParensOptions:
-  InCStyleCasts:   false
-  InConditionalStatements: false
-  InEmptyParentheses: false
-  Other:           false
-SpacesInSquareBrackets: false
-PointerAlignment: Right
-ReferenceAlignment: Pointer
-AllowShortBlocksOnASingleLine: Never
-AllowShortFunctionsOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: false
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortEnumsOnASingleLine: true
-AllowShortLambdasOnASingleLine: All
-AllowShortNamespacesOnASingleLine: false
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+
+# Includes
+SortIncludes: true
