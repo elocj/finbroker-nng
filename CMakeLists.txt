@@ -16,34 +16,17 @@ endif()
 # Create executable
 add_executable(finbroker-nng
     src/main.cpp
-    src/finbroker.cpp)
-
-add_executable(finpublisher-nng
-    src/finpublisher.cpp)
-
-add_executable(finsubscriber-nng
-    src/finsubscriber.cpp)
+    src/finbroker.cpp
+    src/finpublisher.cpp
+    src/finsubscriber.cpp
+    src/metrics/brokermetrics.cpp)
 
 # Link NNG library
 target_link_libraries(finbroker-nng ${NNG_LIBRARIES})
 target_include_directories(finbroker-nng PRIVATE ${NNG_INCLUDE_DIRS})
 
-target_link_libraries(finpublisher-nng ${NNG_LIBRARIES})
-target_include_directories(finpublisher-nng PRIVATE ${NNG_INCLUDE_DIRS})
-
-target_link_libraries(finsubscriber-nng ${NNG_LIBRARIES})
-target_include_directories(finsubscriber-nng PRIVATE ${NNG_INCLUDE_DIRS})
-
 # Set output directory
 set_target_properties(finbroker-nng PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-)
-
-set_target_properties(finpublisher-nng PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-)
-
-set_target_properties(finsubscriber-nng PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 

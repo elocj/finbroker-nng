@@ -1,0 +1,27 @@
+name: Clang Format Check
+
+on:
+  pull_request:
+    paths:
+      - '**/*.cpp'
+      - '**/*.hpp'
+      - '**/*.h'
+      - '**/*.cc'
+      - '**/*.c'
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get install -y clang-format
+
+      - name: Run clang-format
+        run: |
+          files=$(git ls-files '*.cpp' '*.hpp' '*.h' '*.cc' '*.c')
+          if [ -n "$files" ]; then
+            clang-format --dry-run --Werror $files
+          fi
